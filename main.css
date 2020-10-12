@@ -56,7 +56,7 @@ aside {
   height: 100%;
 }
 
-section {
+.canvas-container {
   background: green;
   width: 70%;
   height: 100%;
