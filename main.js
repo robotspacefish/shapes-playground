@@ -3,17 +3,28 @@ const ctx = document.getElementById('js-canvas').getContext('2d');
 const canvasContainer = document.getElementById('js-canvas-container');
 const WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height;
 const mouse = { x: null, y: null, textX: null, texY: null };
-
-
+const points = [];
 
 
 function draw() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
+  points.forEach(p => point(p.x, p.y));
+
   if (mouse.x && mouse.y) drawMouseCoords();
 
   requestAnimationFrame(draw);
 }
+
+function point(x, y, fillColor = 'blue') {
+  console.log('drawing point')
+  ctx.beginPath();
+  ctx.arc(x, y, 4, 0, 2 * Math.PI);
+
+  ctx.fillStyle = fillColor;
+  ctx.fill();
+}
+
 
 // ====== HELPERS ============================================
 function drawMouseCoords() {
@@ -83,5 +94,10 @@ ctx.canvas.addEventListener('mousemove', (e) => {
   }
 })
 
+
+ctx.canvas.addEventListener('click', () => {
+  // add new point to points array
+  points.push({ x: mouse.x, y: mouse.y })
+})
 // ====== START ==============================================
 draw();
