@@ -40,8 +40,8 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid red;
   width: 90%;
+  max-width: 1200px;
   flex: 1;
 }
 
