@@ -4,25 +4,43 @@ const canvasContainer = document.getElementById('js-canvas-container');
 const WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height;
 const mouse = { x: null, y: null, textX: null, texY: null };
 const points = [];
+const lines = [];
+let pointCount = 0;
 
 
 function draw() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
   points.forEach(p => point(p.x, p.y));
-
+  lines.forEach(l => line(l.startX, l.startY, l.endX, l.endY));
   if (mouse.x && mouse.y) drawMouseCoords();
 
   requestAnimationFrame(draw);
 }
 
 function point(x, y, fillColor = 'blue') {
-  console.log('drawing point')
   ctx.beginPath();
   ctx.arc(x, y, 4, 0, 2 * Math.PI);
 
   ctx.fillStyle = fillColor;
   ctx.fill();
+}
+
+function line(startX, startY, endX, endY, strokeColor = 'black') {
+  ctx.strokeStyle = strokeColor;
+  ctx.beginPath();
+  ctx.moveTo(startX, startY);
+  ctx.lineTo(endX, endY);
+  ctx.stroke();
+}
+
+function createLine() {
+  if (points.length >= 2) {
+    const start = points[points.length - 2],
+      end = points[points.length - 1];
+    lines.push({ startX: start.x, startY: start.y, endX: end.x, endY: end.y })
+    lines.push()
+  }
 }
 
 
@@ -97,7 +115,15 @@ ctx.canvas.addEventListener('mousemove', (e) => {
 
 ctx.canvas.addEventListener('click', () => {
   // add new point to points array
-  points.push({ x: mouse.x, y: mouse.y })
+  const point = { x: mouse.x, y: mouse.y };
+  points.push(point)
+  pointCount++;
+
+  if (pointCount === 2) {
+    createLine();
+    // reset pointCount
+    pointCount = 0;
+  }
 })
 // ====== START ==============================================
 draw();
