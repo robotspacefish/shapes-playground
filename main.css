@@ -20,16 +20,35 @@ header {
   text-align: center;
 }
 
+footer {
+  margin-bottom: 40px;
+}
+
+p, a {
+  color: black;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 main {
   display: flex;
   justify-content: center;
+  align-items: center;
   border: 1px solid red;
   width: 90%;
+  flex: 1;
 }
 
 aside {
   border: 1px solid black;
   flex: 1;
+  height: 600px;
 }
 
 section {
