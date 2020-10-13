@@ -2,6 +2,7 @@
 const ctx = document.getElementById('js-canvas').getContext('2d'),
   canvasContainer = document.getElementById('js-canvas-container'),
   clearCanvasBtn = document.getElementById('js-clear'),
+  output = document.getElementById('js-output'),
   WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height,
   mouse = { x: null, y: null, textX: null, texY: null };
 
@@ -23,7 +24,7 @@ function draw() {
   }
 
   points.forEach(p => point(p.x, p.y));
-  lines.forEach(l => line(l.startX, l.startY, l.endX, l.endY));
+  lines.forEach((l, i) => line(l.startX, l.startY, l.endX, l.endY));
 
   if (mouse.x && mouse.y) drawMouseCoords();
 
@@ -36,6 +37,12 @@ function point(x, y, fillColor = 'blue') {
 
   ctx.fillStyle = fillColor;
   ctx.fill();
+}
+
+function addLineDescription(line) {
+  output.innerText += `
+      Line ${line.id}: (${line.startX}, ${line.startY}) to (${line.endX}, ${line.endY})
+    `;
 }
 
 function addPoint(x, y) {
@@ -54,9 +61,12 @@ function line(startX, startY, endX, endY, strokeColor = 'black') {
 function createLine() {
   if (points.length >= 2) {
     const start = points[points.length - 2],
-      end = points[points.length - 1];
-    lines.push({ startX: start.x, startY: start.y, endX: end.x, endY: end.y })
-    lines.push()
+      end = points[points.length - 1],
+      line = { startX: start.x, startY: start.y, endX: end.x, endY: end.y, id: lines.length + 1 };
+    // add 1 to lines.length because line isnt pushed in yet
+    lines.push(line);
+
+    return line;
   }
 }
 
@@ -144,7 +154,9 @@ ctx.canvas.addEventListener('click', () => {
     // place line
     points.push(startPoint);
     points.push(endPoint);
-    createLine();
+    const line = createLine();
+    addLineDescription(line);
+
     // reset point count & start/end points
     pointCount = 0;
     startPoint = null;
