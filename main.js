@@ -6,11 +6,13 @@ import Arc from './Arc.js';
 const ctx = document.getElementById('js-canvas').getContext('2d'),
   canvasContainer = document.getElementById('js-canvas-container'),
   clearCanvasBtn = document.getElementById('js-clear'),
+  createLineBtn = document.getElementById('js-create-line'),
+  createArcBtn = document.getElementById('js-create-arc'),
   output = document.getElementById('js-output'),
   WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height,
   mouse = { x: null, y: null, textX: null, texY: null };
 
-let startPoint, endPoint, tempShape, shape = 'circle';
+let startPoint, endPoint, tempShape, shape;
 
 function draw() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -28,7 +30,7 @@ function update() {
   if (endPoint) endPoint.update(mouse.x, mouse.y);
 
   switch (shape) {
-    case 'circle':
+    case 'arc':
       if (tempShape) {
         tempShape.radius = Math.abs(Math.floor(endPoint.x - startPoint.x));
       }
@@ -102,6 +104,12 @@ window.addEventListener('load', () => {
 window.addEventListener('resize', () => {
   resize();
 })
+
+createArcBtn.addEventListener('click', () => (shape = 'arc'));
+createLineBtn.addEventListener('click', () => {
+  shape = 'line'
+
+});
 
 ctx.canvas.addEventListener('mousemove', (e) => {
   const rect = ctx.canvas.getBoundingClientRect(),
