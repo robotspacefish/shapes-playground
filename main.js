@@ -125,38 +125,41 @@ ctx.canvas.addEventListener('mousemove', (e) => {
   }
 })
 
-
 ctx.canvas.addEventListener('click', () => {
-  Point.count++;
-  if (!startPoint) {
-    // startPoint = new Point(mouse.x, mouse.y);
-    startPoint = Point.createPermanentPoint(mouse.x, mouse.y);
-    endPoint = new Point(mouse.x, mouse.y);
+  if (shape) {
+    Point.count++;
+    if (!startPoint) {
+      // startPoint = new Point(mouse.x, mouse.y);
+      startPoint = Point.createPermanentPoint(mouse.x, mouse.y);
+      endPoint = new Point(mouse.x, mouse.y);
 
-    if (shape === 'circle') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
-    else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
-  }
+      if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
+      else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
 
-  if (Point.count === 2) {
-    switch (shape) {
-      case 'circle':
-        const arc = Arc.createPermanentArc(tempShape);
-        break;
-      case 'line':
-        const line = Line.createPermanentLine(tempShape);
-        Point.createPermanentPoint(endPoint.x, endPoint.y); // finalize endpoint
-        line.renderDescription(output);
-        break;
+      console.log(tempShape)
     }
 
-    // reset point count & start/end points
-    Point.count = 0;
-    startPoint = null;
-    endPoint = null;
-    tempShape = null;
+    if (Point.count === 2) {
+      switch (shape) {
+        case 'arc':
+          const arc = Arc.createPermanentArc(tempShape);
+          break;
+        case 'line':
+          const line = Line.createPermanentLine(tempShape);
+          Point.createPermanentPoint(endPoint.x, endPoint.y); // finalize endpoint
+          line.renderDescription(output);
+          break;
+      }
+
+      // reset point count & start/end points
+      Point.count = 0;
+      startPoint = null;
+      endPoint = null;
+      tempShape = null;
+
+    }
 
   }
-
 
 });
 
