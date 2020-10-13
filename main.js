@@ -1,15 +1,16 @@
 // ====== GLOBAL CONSTANTS ==================================
-const ctx = document.getElementById('js-canvas').getContext('2d');
-const canvasContainer = document.getElementById('js-canvas-container');
-const WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height;
-const mouse = { x: null, y: null, textX: null, texY: null };
-const points = [];
-const lines = [];
-let pointCount = 0;
+const ctx = document.getElementById('js-canvas').getContext('2d'),
+  canvasContainer = document.getElementById('js-canvas-container'),
+  clearCanvasBtn = document.getElementById('js-clear'),
+  WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height,
+  mouse = { x: null, y: null, textX: null, texY: null };
 
+let points = [],
+  lines = [],
+  pointCount = 0;
 
 function draw() {
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   points.forEach(p => point(p.x, p.y));
   lines.forEach(l => line(l.startX, l.startY, l.endX, l.endY));
@@ -41,6 +42,11 @@ function createLine() {
     lines.push({ startX: start.x, startY: start.y, endX: end.x, endY: end.y })
     lines.push()
   }
+}
+
+function clear() {
+  lines = [];
+  points = [];
 }
 
 
@@ -124,6 +130,8 @@ ctx.canvas.addEventListener('click', () => {
     // reset pointCount
     pointCount = 0;
   }
-})
+});
+
+clearCanvasBtn.addEventListener('click', clear);
 // ====== START ==============================================
 draw();
