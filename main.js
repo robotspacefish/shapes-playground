@@ -150,15 +150,6 @@ ctx.canvas.addEventListener('click', () => {
     startPoint = null;
     endPoint = null;
   }
-  // add new point to points array
-  // addPoint(mouse.x, mouse.y)
-
-  // create a line from 2 points
-  // if (pointCount === 2) {
-  //   createLine();
-  //   // reset pointCount
-  //   pointCount = 0;
-  // }
 });
 
 clearCanvasBtn.addEventListener('click', clear);
