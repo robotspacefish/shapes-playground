@@ -73,6 +73,7 @@ function createLine() {
 function clear() {
   lines = [];
   points = [];
+  output.innerText = '';
 }
 
 
