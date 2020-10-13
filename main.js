@@ -129,7 +129,8 @@ ctx.canvas.addEventListener('mousemove', (e) => {
 ctx.canvas.addEventListener('click', () => {
   Point.count++;
   if (!startPoint) {
-    startPoint = new Point(mouse.x, mouse.y);
+    // startPoint = new Point(mouse.x, mouse.y);
+    startPoint = Point.createPermanentPoint(mouse.x, mouse.y);
     endPoint = new Point(mouse.x, mouse.y);
 
     if (shape === 'circle') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
@@ -140,11 +141,10 @@ ctx.canvas.addEventListener('click', () => {
     switch (shape) {
       case 'circle':
         const arc = Arc.createPermanentArc(tempShape);
-        endPoint.x = arc.x + arc.radius * Math.cos(arc.endAngle);
-        endPoint.y = arc.y + arc.radius * Math.sin(arc.endAngle);
         break;
       case 'line':
         const line = Line.createPermanentLine(tempShape);
+        Point.createPermanentPoint(endPoint.x, endPoint.y); // finalize endpoint
         line.renderDescription(output);
         break;
     }

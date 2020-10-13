@@ -6,7 +6,14 @@ export default class Point {
     this.x = x;
     this.y = y;
     this.fillColor = fillColor;
-    Point.all.push(this)
+    // Point.all.push(this)
+  }
+
+  static createPermanentPoint(x, y) {
+    const point = new Point(x, y);
+    Point.all.push(point);
+
+    return point;
   }
 
   draw(ctx) {
