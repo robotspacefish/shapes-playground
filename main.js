@@ -1,3 +1,4 @@
+import Line from './Line.js';
 import Point from './Point.js';
 
 // ====== GLOBAL CONSTANTS ==================================
@@ -8,65 +9,38 @@ const ctx = document.getElementById('js-canvas').getContext('2d'),
   WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height,
   mouse = { x: null, y: null, textX: null, texY: null };
 
-let lines = [],
-  startPoint,
-  endPoint;
+let startPoint, endPoint, tempLine;
 
 function draw() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  if (startPoint && endPoint) {
-    line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey')
-  }
+  if (tempLine) tempLine.draw(ctx);
 
   Point.all.forEach(p => p.draw(ctx));
-  lines.forEach((l, i) => line(l.startX, l.startY, l.endX, l.endY));
+  Line.all.forEach(l => l.draw(ctx));
 
   if (mouse.x && mouse.y) drawMouseCoords();
 }
 
 function update() {
   if (endPoint) endPoint.update(mouse.x, mouse.y);
+  if (tempLine) {
+    tempLine.ex = endPoint.x;
+    tempLine.ey = endPoint.y;
+  }
 }
 
 function loop() {
   update();
   draw();
-
   requestAnimationFrame(loop);
 }
 
-function addLineDescription(line) {
-  output.innerText += `
-      Line ${line.id}: (${line.startX}, ${line.startY}) to (${line.endX}, ${line.endY})
-    `;
-}
-
-function line(startX, startY, endX, endY, strokeColor = 'black') {
-  ctx.strokeStyle = strokeColor;
-  ctx.beginPath();
-  ctx.moveTo(startX, startY);
-  ctx.lineTo(endX, endY);
-  ctx.stroke();
-}
-
-function createLine() {
-  if (Point.all.length >= 2) {
-    const line = { startX: startPoint.x, startY: startPoint.y, endX: endPoint.x, endY: endPoint.y, id: lines.length + 1 };
-    // add 1 to lines.length because line isnt pushed in yet
-    lines.push(line);
-
-    return line;
-  }
-}
-
 function clear() {
-  lines = [];
-  // points = [];
+  Line.all = [];
   Point.all = [];
   output.innerText = '';
 }
-
 
 // ====== HELPERS ============================================
 function drawMouseCoords() {
@@ -138,22 +112,24 @@ ctx.canvas.addEventListener('mousemove', (e) => {
 
 
 ctx.canvas.addEventListener('click', () => {
-
   Point.count++;
+
   if (!startPoint) {
     startPoint = new Point(mouse.x, mouse.y);
-    endPoint = new Point(mouse.x, mouse.y)
+    endPoint = new Point(mouse.x, mouse.y);
+    tempLine = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
   }
 
   if (Point.count === 2) {
-    // place line
-    const line = createLine();
-    addLineDescription(line);
+    // place permanent line
+    const line = Line.createPermanentLine(tempLine);
+    line.renderDescription(output);
 
     // reset point count & start/end points
     Point.count = 0;
     startPoint = null;
     endPoint = null;
+    tempLine = null;
 
   }
 });
