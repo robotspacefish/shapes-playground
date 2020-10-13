@@ -7,13 +7,24 @@ const ctx = document.getElementById('js-canvas').getContext('2d'),
 
 let points = [],
   lines = [],
-  pointCount = 0;
+  pointCount = 0,
+  startPoint,
+  endPoint;
 
 function draw() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+  // once a point is created, create end point
+  if (startPoint) {
+    endPoint = { x: mouse.x, y: mouse.y }
+    point(startPoint.x, startPoint.y)
+    point(endPoint.x, endPoint.y)
+    line(startPoint.x, startPoint.y, endPoint.x, endPoint.y)
+  }
+
   points.forEach(p => point(p.x, p.y));
   lines.forEach(l => line(l.startX, l.startY, l.endX, l.endY));
+
   if (mouse.x && mouse.y) drawMouseCoords();
 
   requestAnimationFrame(draw);
@@ -25,6 +36,11 @@ function point(x, y, fillColor = 'blue') {
 
   ctx.fillStyle = fillColor;
   ctx.fill();
+}
+
+function addPoint(x, y) {
+  points.push({ x, y })
+  pointCount++;
 }
 
 function line(startX, startY, endX, endY, strokeColor = 'black') {
@@ -120,18 +136,32 @@ ctx.canvas.addEventListener('mousemove', (e) => {
 
 
 ctx.canvas.addEventListener('click', () => {
-  // add new point to points array
-  const point = { x: mouse.x, y: mouse.y };
-  points.push(point)
   pointCount++;
 
+  if (!startPoint) startPoint = { x: mouse.x, y: mouse.y };
+
   if (pointCount === 2) {
+    // place line
+    points.push(startPoint);
+    points.push(endPoint);
     createLine();
-    // reset pointCount
+    // reset point count & start/end points
     pointCount = 0;
+    startPoint = null;
+    endPoint = null;
   }
+  // add new point to points array
+  // addPoint(mouse.x, mouse.y)
+
+  // create a line from 2 points
+  // if (pointCount === 2) {
+  //   createLine();
+  //   // reset pointCount
+  //   pointCount = 0;
+  // }
 });
 
 clearCanvasBtn.addEventListener('click', clear);
 // ====== START ==============================================
 draw();
+
