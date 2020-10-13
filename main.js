@@ -1,5 +1,6 @@
 import Line from './Line.js';
 import Point from './Point.js';
+import Arc from './Arc.js';
 
 // ====== GLOBAL CONSTANTS ==================================
 const ctx = document.getElementById('js-canvas').getContext('2d'),
@@ -9,25 +10,38 @@ const ctx = document.getElementById('js-canvas').getContext('2d'),
   WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height,
   mouse = { x: null, y: null, textX: null, texY: null };
 
-let startPoint, endPoint, tempLine;
+let startPoint, endPoint, tempShape, shape = 'circle';
 
 function draw() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  if (tempLine) tempLine.draw(ctx);
+  if (tempShape) tempShape.draw(ctx);
 
   Point.all.forEach(p => p.draw(ctx));
   Line.all.forEach(l => l.draw(ctx));
+  Arc.all.forEach(a => a.draw(ctx));
 
   if (mouse.x && mouse.y) drawMouseCoords();
 }
 
 function update() {
   if (endPoint) endPoint.update(mouse.x, mouse.y);
-  if (tempLine) {
-    tempLine.ex = endPoint.x;
-    tempLine.ey = endPoint.y;
+
+  switch (shape) {
+    case 'circle':
+      if (tempShape) {
+        tempShape.radius = Math.abs(Math.floor(endPoint.x - startPoint.x));
+      }
+      break;
+    case 'line':
+      if (tempShape) {
+        tempShape.ex = endPoint.x;
+        tempShape.ey = endPoint.y;
+      }
+      break;
   }
+
+
 }
 
 function loop() {
@@ -39,6 +53,7 @@ function loop() {
 function clear() {
   Line.all = [];
   Point.all = [];
+  Arc.all = [];
   output.innerText = '';
 }
 
@@ -106,32 +121,43 @@ ctx.canvas.addEventListener('mousemove', (e) => {
   } else if (mouse.y < 30) {
     mouse.textY = mouse.y + 20;
   } else {
-    mouse.textY -= 10
+    mouse.textY -= 10;
   }
 })
 
 
 ctx.canvas.addEventListener('click', () => {
   Point.count++;
-
   if (!startPoint) {
     startPoint = new Point(mouse.x, mouse.y);
     endPoint = new Point(mouse.x, mouse.y);
-    tempLine = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
+
+    if (shape === 'circle') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
+    else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
   }
 
   if (Point.count === 2) {
-    // place permanent line
-    const line = Line.createPermanentLine(tempLine);
-    line.renderDescription(output);
+    switch (shape) {
+      case 'circle':
+        const arc = Arc.createPermanentArc(tempShape);
+        endPoint.x = arc.x + arc.radius * Math.cos(arc.endAngle);
+        endPoint.y = arc.y + arc.radius * Math.sin(arc.endAngle);
+        break;
+      case 'line':
+        const line = Line.createPermanentLine(tempShape);
+        line.renderDescription(output);
+        break;
+    }
 
     // reset point count & start/end points
     Point.count = 0;
     startPoint = null;
     endPoint = null;
-    tempLine = null;
+    tempShape = null;
 
   }
+
+
 });
 
 clearCanvasBtn.addEventListener('click', clear);
