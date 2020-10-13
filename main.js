@@ -1,3 +1,5 @@
+import Point from './Point.js';
+
 // ====== GLOBAL CONSTANTS ==================================
 const ctx = document.getElementById('js-canvas').getContext('2d'),
   canvasContainer = document.getElementById('js-canvas-container'),
@@ -6,48 +8,38 @@ const ctx = document.getElementById('js-canvas').getContext('2d'),
   WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height,
   mouse = { x: null, y: null, textX: null, texY: null };
 
-let points = [],
-  lines = [],
-  pointCount = 0,
+let lines = [],
   startPoint,
   endPoint;
 
 function draw() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  // once a point is created, create end point
-  if (startPoint) {
-    endPoint = { x: mouse.x, y: mouse.y }
-    point(startPoint.x, startPoint.y)
-    point(endPoint.x, endPoint.y)
+  if (startPoint && endPoint) {
     line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey')
   }
 
-  points.forEach(p => point(p.x, p.y));
+  Point.all.forEach(p => p.draw(ctx));
   lines.forEach((l, i) => line(l.startX, l.startY, l.endX, l.endY));
 
   if (mouse.x && mouse.y) drawMouseCoords();
-
-  requestAnimationFrame(draw);
 }
 
-function point(x, y, fillColor = 'blue') {
-  ctx.beginPath();
-  ctx.arc(x, y, 4, 0, 2 * Math.PI);
+function update() {
+  if (endPoint) endPoint.update(mouse.x, mouse.y);
+}
 
-  ctx.fillStyle = fillColor;
-  ctx.fill();
+function loop() {
+  update();
+  draw();
+
+  requestAnimationFrame(loop);
 }
 
 function addLineDescription(line) {
   output.innerText += `
       Line ${line.id}: (${line.startX}, ${line.startY}) to (${line.endX}, ${line.endY})
     `;
-}
-
-function addPoint(x, y) {
-  points.push({ x, y })
-  pointCount++;
 }
 
 function line(startX, startY, endX, endY, strokeColor = 'black') {
@@ -59,10 +51,8 @@ function line(startX, startY, endX, endY, strokeColor = 'black') {
 }
 
 function createLine() {
-  if (points.length >= 2) {
-    const start = points[points.length - 2],
-      end = points[points.length - 1],
-      line = { startX: start.x, startY: start.y, endX: end.x, endY: end.y, id: lines.length + 1 };
+  if (Point.all.length >= 2) {
+    const line = { startX: startPoint.x, startY: startPoint.y, endX: endPoint.x, endY: endPoint.y, id: lines.length + 1 };
     // add 1 to lines.length because line isnt pushed in yet
     lines.push(line);
 
@@ -72,7 +62,8 @@ function createLine() {
 
 function clear() {
   lines = [];
-  points = [];
+  // points = [];
+  Point.all = [];
   output.innerText = '';
 }
 
@@ -147,25 +138,27 @@ ctx.canvas.addEventListener('mousemove', (e) => {
 
 
 ctx.canvas.addEventListener('click', () => {
-  pointCount++;
 
-  if (!startPoint) startPoint = { x: mouse.x, y: mouse.y };
+  Point.count++;
+  if (!startPoint) {
+    startPoint = new Point(mouse.x, mouse.y);
+    endPoint = new Point(mouse.x, mouse.y)
+  }
 
-  if (pointCount === 2) {
+  if (Point.count === 2) {
     // place line
-    points.push(startPoint);
-    points.push(endPoint);
     const line = createLine();
     addLineDescription(line);
 
     // reset point count & start/end points
-    pointCount = 0;
+    Point.count = 0;
     startPoint = null;
     endPoint = null;
+
   }
 });
 
 clearCanvasBtn.addEventListener('click', clear);
 // ====== START ==============================================
-draw();
+loop();
 
