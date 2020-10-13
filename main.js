@@ -20,7 +20,7 @@ function draw() {
     endPoint = { x: mouse.x, y: mouse.y }
     point(startPoint.x, startPoint.y)
     point(endPoint.x, endPoint.y)
-    line(startPoint.x, startPoint.y, endPoint.x, endPoint.y)
+    line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey')
   }
 
   points.forEach(p => point(p.x, p.y));
