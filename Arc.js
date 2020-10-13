@@ -14,6 +14,7 @@ export default class Arc {
   static createPermanentArc(temp) {
     // const arc = new Arc(temp.x, temp.y, temp.radius);
     const arc = temp;
+    arc.strokeColor = 'green';
     Arc.save(arc);
 
     return arc;
@@ -28,7 +29,7 @@ export default class Arc {
 
   draw(ctx) {
     ctx.beginPath();
-    ctx.strokeColor = this.strokeColor;
+    ctx.strokeStyle = this.strokeColor;
     ctx.arc(this.x, this.y, this.radius, this.startAngle, this.endAngle);
     ctx.stroke();
   }
