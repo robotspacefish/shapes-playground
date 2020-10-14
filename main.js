@@ -102,6 +102,12 @@ function createClickHandler(e) {
   if (e.target.id === 'js-create-line') shape = 'line';
   else if (e.target.id === 'js-create-arc') shape = 'arc';
 
+  createButtons.forEach(btn => {
+    if (btn.classList.contains('selected')) btn.classList.remove('selected');
+  });
+
+  e.target.classList.add('selected');
+}
 // ====== EVENT LISTENERS ===================================
 window.addEventListener('load', () => {
   resize();
