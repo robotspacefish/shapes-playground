@@ -1,6 +1,9 @@
+import { createID } from './helpers.js';
+
 export default class Arc {
   static all = [];
   static ID = 1; // TODO change id method
+  static count = 0;
 
   constructor(x, y, radius, strokeColor = 'green', startAngle = 0, endAngle = 2 * Math.PI) {
     this.x = x;
@@ -16,14 +19,13 @@ export default class Arc {
     const arc = temp;
     arc.strokeColor = 'green';
     Arc.save(arc);
+    Arc.count++;
 
     return arc;
   }
 
   static save(arc) {
-    arc.id = Arc.ID;
-
-    Arc.ID++;
+    arc.id = createID(arc);
     Arc.all.push(arc);
   }
 

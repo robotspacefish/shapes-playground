@@ -1,6 +1,8 @@
+import { createID } from './helpers.js';
+
 export default class Line {
   static all = [];
-  static ID = 1;
+  static count = 0;
 
   constructor(sx, sy, ex, ey, color = 'black') {
     this.sx = sx;
@@ -13,14 +15,13 @@ export default class Line {
   static createPermanentLine(temp) {
     const line = new Line(temp.sx, temp.sy, temp.ex, temp.ey);
     Line.save(line);
-
+    Line.count++;
     return line;
   }
 
-  static save(line) {
-    line.id = Line.ID;
 
-    Line.ID++;
+  static save(line) {
+    line.id = createID(line);
     Line.all.push(line);
   }
 
@@ -35,8 +36,8 @@ export default class Line {
   renderDescription(output) {
     const fragment = document.createDocumentFragment();
     const p = document.createElement('p');
-    p.innerText = `Line ${this.id}: (${this.sx}, ${this.sy}) to (${this.ex}, ${this.ey})`;
-
+    p.innerText = `Line ${Line.count}: (${this.sx}, ${this.sy}) to (${this.ex}, ${this.ey})`;
+    p.id = this.id;
     fragment.appendChild(p);
     output.appendChild(fragment);
   }
