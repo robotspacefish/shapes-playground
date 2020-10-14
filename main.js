@@ -1,83 +1,62 @@
-// ====== GLOBAL CONSTANTS ==================================
+import Line from './Line.js';
+import Point from './Point.js';
+import Arc from './Arc.js';
+
+// ====== GLOBALS ==================================
 const ctx = document.getElementById('js-canvas').getContext('2d'),
   canvasContainer = document.getElementById('js-canvas-container'),
   clearCanvasBtn = document.getElementById('js-clear'),
+  createLineBtn = document.getElementById('js-create-line'),
+  createArcBtn = document.getElementById('js-create-arc'),
+  createButtons = document.querySelectorAll('.shape-create-btn'),
   output = document.getElementById('js-output'),
   WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height,
   mouse = { x: null, y: null, textX: null, texY: null };
 
-let points = [],
-  lines = [],
-  pointCount = 0,
-  startPoint,
-  endPoint;
+let startPoint, endPoint, tempShape, shape;
 
+// ====== MAIN ======================================
 function draw() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  // once a point is created, create end point
-  if (startPoint) {
-    endPoint = { x: mouse.x, y: mouse.y }
-    point(startPoint.x, startPoint.y)
-    point(endPoint.x, endPoint.y)
-    line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey')
-  }
+  if (tempShape) tempShape.draw(ctx);
 
-  points.forEach(p => point(p.x, p.y));
-  lines.forEach((l, i) => line(l.startX, l.startY, l.endX, l.endY));
+  Shape.all.forEach(s => s.draw(ctx))
 
   if (mouse.x && mouse.y) drawMouseCoords();
-
-  requestAnimationFrame(draw);
 }
 
-function point(x, y, fillColor = 'blue') {
-  ctx.beginPath();
-  ctx.arc(x, y, 4, 0, 2 * Math.PI);
+function update() {
+  if (endPoint) endPoint.update(mouse.x, mouse.y);
 
-  ctx.fillStyle = fillColor;
-  ctx.fill();
-}
-
-function addLineDescription(line) {
-  output.innerText += `
-      Line ${line.id}: (${line.startX}, ${line.startY}) to (${line.endX}, ${line.endY})
-    `;
-}
-
-function addPoint(x, y) {
-  points.push({ x, y })
-  pointCount++;
-}
-
-function line(startX, startY, endX, endY, strokeColor = 'black') {
-  ctx.strokeStyle = strokeColor;
-  ctx.beginPath();
-  ctx.moveTo(startX, startY);
-  ctx.lineTo(endX, endY);
-  ctx.stroke();
-}
-
-function createLine() {
-  if (points.length >= 2) {
-    const start = points[points.length - 2],
-      end = points[points.length - 1],
-      line = { startX: start.x, startY: start.y, endX: end.x, endY: end.y, id: lines.length + 1 };
-    // add 1 to lines.length because line isnt pushed in yet
-    lines.push(line);
-
-    return line;
+  switch (shape) {
+    case 'arc':
+      if (tempShape) {
+        tempShape.radius = Math.abs(Math.floor(endPoint.x - startPoint.x));
+      }
+      break;
+    case 'line':
+      if (tempShape) {
+        tempShape.ex = endPoint.x;
+        tempShape.ey = endPoint.y;
+      }
+      break;
   }
+
+
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
 }
 
 function clear() {
-  lines = [];
-  points = [];
+  Shape.all = [];
   output.innerText = '';
 }
 
-
-// ====== HELPERS ============================================
 function drawMouseCoords() {
   ctx.lineWidth = 2;
   ctx.fillStyle = 'red';
@@ -114,6 +93,25 @@ function resize() {
   ctx.canvas.style.height = `${cHeight}px`;
 }
 
+function createClickHandler(e) {
+  if (e.target.id === 'js-create-line') shape = 'line';
+  else if (e.target.id === 'js-create-arc') shape = 'arc';
+
+  createButtons.forEach(btn => {
+    if (btn.classList.contains('selected')) btn.classList.remove('selected');
+  });
+
+  e.target.classList.add('selected');
+}
+
+function isExistingPointClicked() {
+  const point = Point.all.find(p => {
+    return p.x - 4 <= mouse.x && p.x + 4 >= mouse.x && p.y - 4 <= mouse.y && p.y + 4 >= mouse.y
+  })
+
+  return point ? point : false;
+}
+
 // ====== EVENT LISTENERS ===================================
 window.addEventListener('load', () => {
   resize();
@@ -121,6 +119,10 @@ window.addEventListener('load', () => {
 
 window.addEventListener('resize', () => {
   resize();
+})
+
+createButtons.forEach(btn => {
+  btn.addEventListener('click', createClickHandler)
 })
 
 ctx.canvas.addEventListener('mousemove', (e) => {
@@ -141,31 +143,56 @@ ctx.canvas.addEventListener('mousemove', (e) => {
   } else if (mouse.y < 30) {
     mouse.textY = mouse.y + 20;
   } else {
-    mouse.textY -= 10
+    mouse.textY -= 10;
   }
 })
 
-
 ctx.canvas.addEventListener('click', () => {
-  pointCount++;
+  if (shape) {
+    const existingPoint = isExistingPointClicked();
+    if (existingPoint) {
+      console.log('found a point')
+    } else {
+      Point.count++;
+      if (!startPoint) {
+        // startPoint = new Point(mouse.x, mouse.y);
+        startPoint = Point.createPermanentPoint(mouse.x, mouse.y);
+        endPoint = new Point(mouse.x, mouse.y);
 
-  if (!startPoint) startPoint = { x: mouse.x, y: mouse.y };
+        if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
+        else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
 
-  if (pointCount === 2) {
-    // place line
-    points.push(startPoint);
-    points.push(endPoint);
-    const line = createLine();
-    addLineDescription(line);
+      }
 
-    // reset point count & start/end points
-    pointCount = 0;
-    startPoint = null;
-    endPoint = null;
+      if (Point.count === 2) {
+        switch (shape) {
+          case 'arc':
+            const arc = Arc.createPermanentArc(tempShape);
+            arc.renderDescription(output);
+            break;
+          case 'line':
+            const line = Line.createPermanentLine(tempShape);
+            Point.createPermanentPoint(endPoint.x, endPoint.y); // finalize endpoint
+            tempShape.addPoints(startPoint, endPoint);
+            line.renderDescription(output);
+            break;
+        }
+
+        // reset point count & start/end points
+        Point.count = 0;
+        startPoint = null;
+        endPoint = null;
+        tempShape = null;
+      }
+
+
+    }
+
   }
+
 });
 
 clearCanvasBtn.addEventListener('click', clear);
 // ====== START ==============================================
-draw();
+loop();
 
