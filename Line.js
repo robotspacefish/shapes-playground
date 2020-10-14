@@ -1,35 +1,20 @@
-import { createID } from './helpers.js';
+import Shape from './Shape.js';
 
-export default class Line {
-  static all = [];
-  static count = 0;
-
+export default class Line extends Shape {
   constructor(sx, sy, ex, ey, color = 'black') {
+    super(color);
     this.sx = sx;
     this.sy = sy;
     this.ex = ex;
     this.ey = ey;
-    this.color = color;
-    this.points = { start: null, end: null };
-  }
-
-  addPoints(start, end) {
-    this.points = { start, end };
   }
 
   static createPermanentLine(temp) {
     const line = new Line(temp.sx, temp.sy, temp.ex, temp.ey);
-    Line.save(line);
+    Shape.save(line);
     Line.count++;
     return line;
   }
-
-  static save(line) {
-    line.id = createID(line);
-    Line.all.push(line);
-  }
-
-
 
   draw(ctx) {
     ctx.strokeStyle = this.color;

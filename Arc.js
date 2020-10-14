@@ -1,38 +1,40 @@
+import Shape from './Shape.js';
 import { createID } from './helpers.js';
 
-export default class Arc {
-  static all = [];
-  static ID = 1; // TODO change id method
-  static count = 0;
-
-  constructor(x, y, radius, strokeColor = 'green', startAngle = 0, endAngle = 2 * Math.PI) {
+export default class Arc extends Shape {
+  constructor(x, y, radius, color = 'green', startAngle = 0, endAngle = 2 * Math.PI) {
+    super(color);
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.startAngle = startAngle;
     this.endAngle = endAngle;
-    this.strokeColor = strokeColor;
   }
 
   static createPermanentArc(temp) {
     // const arc = new Arc(temp.x, temp.y, temp.radius);
     const arc = temp;
-    arc.strokeColor = 'green';
-    Arc.save(arc);
+    arc.color = 'green';
+    Shape.save(arc);
     Arc.count++;
 
     return arc;
   }
 
-  static save(arc) {
-    arc.id = createID(arc);
-    Arc.all.push(arc);
-  }
-
   draw(ctx) {
     ctx.beginPath();
-    ctx.strokeStyle = this.strokeColor;
+    ctx.strokeStyle = this.color;
     ctx.arc(this.x, this.y, this.radius, this.startAngle, this.endAngle);
     ctx.stroke();
   }
+
+  renderDescription(output) {
+    const fragment = document.createDocumentFragment();
+    const p = document.createElement('p');
+    p.innerText = `Arc ${Arc.count}: center: (${this.x}, ${this.y}), radius:${this.radius}`;
+    p.id = this.id;
+    fragment.appendChild(p);
+    output.appendChild(fragment);
+  }
+
 }
