@@ -54,7 +54,6 @@ function loop() {
 }
 
 function clear() {
-  Point.all = [];
   Shape.all = [];
   output.innerText = '';
 }

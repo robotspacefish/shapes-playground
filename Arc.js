@@ -1,5 +1,4 @@
 import Shape from './Shape.js';
-import { createID } from './helpers.js';
 
 export default class Arc extends Shape {
   constructor(x, y, radius, color = 'green', startAngle = 0, endAngle = 2 * Math.PI) {
@@ -16,7 +15,6 @@ export default class Arc extends Shape {
     const arc = temp;
     arc.color = 'green';
     Shape.save(arc);
-    Arc.count++;
 
     return arc;
   }
