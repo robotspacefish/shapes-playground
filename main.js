@@ -149,11 +149,22 @@ ctx.canvas.addEventListener('mousemove', (e) => {
 
 ctx.canvas.addEventListener('click', () => {
   if (shape) {
+    Point.count++;
     const existingPoint = isExistingPointClicked();
+
     if (existingPoint) {
-      console.log('found a point')
+      if (!startPoint) {
+        startPoint = existingPoint;
+        endPoint = new Point(mouse.x, mouse.y);
+
+        if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
+        else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
+      } else {
+        // endpoint
+      }
+
     } else {
-      Point.count++;
+      // Point.count++;
       if (!startPoint) {
         // startPoint = new Point(mouse.x, mouse.y);
         startPoint = Point.createPermanentPoint(mouse.x, mouse.y);
