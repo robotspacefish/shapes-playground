@@ -21,9 +21,8 @@ function draw() {
 
   if (tempShape) tempShape.draw(ctx);
 
+  Shape.all.forEach(s => s.draw(ctx))
   Point.all.forEach(p => p.draw(ctx));
-  Line.all.forEach(l => l.draw(ctx));
-  Arc.all.forEach(a => a.draw(ctx));
 
   if (mouse.x && mouse.y) drawMouseCoords();
 }
@@ -55,13 +54,11 @@ function loop() {
 }
 
 function clear() {
-  Line.all = [];
   Point.all = [];
-  Arc.all = [];
+  Shape.all = [];
   output.innerText = '';
 }
 
-// ====== HELPERS ============================================
 function drawMouseCoords() {
   ctx.lineWidth = 2;
   ctx.fillStyle = 'red';
