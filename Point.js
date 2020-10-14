@@ -1,25 +1,22 @@
-export default class Point {
-  static all = [];
+import Arc from './Arc.js';
+import Shape from './Shape.js';
+
+export default class Point extends Arc {
   static count = 0;
 
-  constructor(x, y, fillColor = 'blue') {
-    this.x = x;
-    this.y = y;
-    this.fillColor = fillColor;
-    // Point.all.push(this)
+  constructor(x, y, radius = 4, color = 'blue') {
+    super(x, y, radius, color)
   }
 
   static createPermanentPoint(x, y) {
     const point = new Point(x, y);
-    Point.all.push(point);
-
+    Shape.save(point);
     return point;
   }
 
   draw(ctx) {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 4, 0, 2 * Math.PI);
-    ctx.fillStyle = this.fillColor;
+    super.draw(ctx);
+    ctx.fillStyle = this.color;
     ctx.fill();
   }
 
@@ -28,7 +25,7 @@ export default class Point {
     this.y = y;
   }
 
-  add(x, y, fillColor) {
-    Point.all.push(new Point(x, y, fillColor))
+  add(x, y, color) {
+    Point.all.push(new Point(x, y, color))
   }
 }

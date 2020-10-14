@@ -22,7 +22,6 @@ function draw() {
   if (tempShape) tempShape.draw(ctx);
 
   Shape.all.forEach(s => s.draw(ctx))
-  Point.all.forEach(p => p.draw(ctx));
 
   if (mouse.x && mouse.y) drawMouseCoords();
 }
