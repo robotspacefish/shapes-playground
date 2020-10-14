@@ -2,8 +2,6 @@ import Arc from './Arc.js';
 import Shape from './Shape.js';
 
 export default class Point extends Arc {
-  static count = 0;
-
   constructor(x, y, radius = 4, color = 'blue') {
     super(x, y, radius, color)
   }
