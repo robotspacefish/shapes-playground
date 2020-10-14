@@ -136,7 +136,7 @@ ctx.canvas.addEventListener('mousemove', (e) => {
   mouse.textY = mouse.y - 10;
 
   // move text if too close to edges
-  mouse.textX += mouse.x > ctx.canvas.width - 45 ? -70 : 10;
+  mouse.textX += mouse.x > ctx.canvas.width - 100 ? -70 : 10;
 
   if (mouse.y > ctx.canvas.height - 30) {
     mouse.textY = mouse.y - 20;
