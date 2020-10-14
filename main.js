@@ -8,6 +8,7 @@ const ctx = document.getElementById('js-canvas').getContext('2d'),
   clearCanvasBtn = document.getElementById('js-clear'),
   createLineBtn = document.getElementById('js-create-line'),
   createArcBtn = document.getElementById('js-create-arc'),
+  createButtons = document.querySelectorAll('.shape-create-btn'),
   output = document.getElementById('js-output'),
   WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height,
   mouse = { x: null, y: null, textX: null, texY: null };
@@ -97,6 +98,10 @@ function resize() {
   ctx.canvas.style.height = `${cHeight}px`;
 }
 
+function createClickHandler(e) {
+  if (e.target.id === 'js-create-line') shape = 'line';
+  else if (e.target.id === 'js-create-arc') shape = 'arc';
+
 // ====== EVENT LISTENERS ===================================
 window.addEventListener('load', () => {
   resize();
@@ -106,11 +111,9 @@ window.addEventListener('resize', () => {
   resize();
 })
 
-createArcBtn.addEventListener('click', () => (shape = 'arc'));
-createLineBtn.addEventListener('click', () => {
-  shape = 'line'
-
-});
+createButtons.forEach(btn => {
+  btn.addEventListener('click', createClickHandler)
+})
 
 ctx.canvas.addEventListener('mousemove', (e) => {
   const rect = ctx.canvas.getBoundingClientRect(),
