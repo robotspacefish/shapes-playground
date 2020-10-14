@@ -10,6 +10,11 @@ export default class Line {
     this.ex = ex;
     this.ey = ey;
     this.color = color;
+    this.points = { start: null, end: null };
+  }
+
+  addPoints(start, end) {
+    this.points = { start, end };
   }
 
   static createPermanentLine(temp) {
@@ -19,11 +24,12 @@ export default class Line {
     return line;
   }
 
-
   static save(line) {
     line.id = createID(line);
     Line.all.push(line);
   }
+
+
 
   draw(ctx) {
     ctx.strokeStyle = this.color;

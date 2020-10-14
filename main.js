@@ -178,6 +178,7 @@ ctx.canvas.addEventListener('click', () => {
           case 'line':
             const line = Line.createPermanentLine(tempShape);
             Point.createPermanentPoint(endPoint.x, endPoint.y); // finalize endpoint
+            tempShape.addPoints(startPoint, endPoint);
             line.renderDescription(output);
             break;
         }
