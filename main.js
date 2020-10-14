@@ -2,7 +2,7 @@ import Line from './Line.js';
 import Point from './Point.js';
 import Arc from './Arc.js';
 
-// ====== GLOBAL CONSTANTS ==================================
+// ====== GLOBALS ==================================
 const ctx = document.getElementById('js-canvas').getContext('2d'),
   canvasContainer = document.getElementById('js-canvas-container'),
   clearCanvasBtn = document.getElementById('js-clear'),
@@ -14,6 +14,7 @@ const ctx = document.getElementById('js-canvas').getContext('2d'),
 
 let startPoint, endPoint, tempShape, shape;
 
+// ====== MAIN ======================================
 function draw() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
