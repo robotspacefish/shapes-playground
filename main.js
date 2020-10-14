@@ -108,6 +108,15 @@ function createClickHandler(e) {
 
   e.target.classList.add('selected');
 }
+
+function isExistingPointClicked() {
+  const point = Point.all.find(p => {
+    return p.x - 4 <= mouse.x && p.x + 4 >= mouse.x && p.y - 4 <= mouse.y && p.y + 4 >= mouse.y
+  })
+
+  return point ? point : false;
+}
+
 // ====== EVENT LISTENERS ===================================
 window.addEventListener('load', () => {
   resize();
@@ -145,35 +154,41 @@ ctx.canvas.addEventListener('mousemove', (e) => {
 
 ctx.canvas.addEventListener('click', () => {
   if (shape) {
-    Point.count++;
-    if (!startPoint) {
-      // startPoint = new Point(mouse.x, mouse.y);
-      startPoint = Point.createPermanentPoint(mouse.x, mouse.y);
-      endPoint = new Point(mouse.x, mouse.y);
+    const existingPoint = isExistingPointClicked();
+    if (existingPoint) {
+      console.log('found a point')
+    } else {
+      Point.count++;
+      if (!startPoint) {
+        // startPoint = new Point(mouse.x, mouse.y);
+        startPoint = Point.createPermanentPoint(mouse.x, mouse.y);
+        endPoint = new Point(mouse.x, mouse.y);
 
-      if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
-      else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
+        if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
+        else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
 
-      console.log(tempShape)
-    }
-
-    if (Point.count === 2) {
-      switch (shape) {
-        case 'arc':
-          const arc = Arc.createPermanentArc(tempShape);
-          break;
-        case 'line':
-          const line = Line.createPermanentLine(tempShape);
-          Point.createPermanentPoint(endPoint.x, endPoint.y); // finalize endpoint
-          line.renderDescription(output);
-          break;
       }
 
-      // reset point count & start/end points
-      Point.count = 0;
-      startPoint = null;
-      endPoint = null;
-      tempShape = null;
+      if (Point.count === 2) {
+        switch (shape) {
+          case 'arc':
+            const arc = Arc.createPermanentArc(tempShape);
+            arc.renderDescription(output);
+            break;
+          case 'line':
+            const line = Line.createPermanentLine(tempShape);
+            Point.createPermanentPoint(endPoint.x, endPoint.y); // finalize endpoint
+            line.renderDescription(output);
+            break;
+        }
+
+        // reset point count & start/end points
+        Point.count = 0;
+        startPoint = null;
+        endPoint = null;
+        tempShape = null;
+      }
+
 
     }
 
