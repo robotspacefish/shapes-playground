@@ -177,6 +177,10 @@ ctx.canvas.addEventListener('click', () => {
 
         if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
         else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
+        else if (shape === 'arced-line') {
+          arcPoint = Point.createPermanentPoint(startPoint.x, endPoint.y, 'red');
+          tempShape = new ArcedLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, arcPoint.x, arcPoint.y, 'lightgrey')
+        }
       } else {
         //endpoint
         // TODO
