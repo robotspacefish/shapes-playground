@@ -10,20 +10,23 @@
 
 <body>
   <header>
-    <h1>Arcs</h1>
+    <h1>Shapes</h1>
   </header>
   <main>
     <section class="canvas-container" id="js-canvas-container">
+      <h2>Canvas</h2>
       <canvas id="js-canvas" height="600" width="800"></canvas>
+      <button class="clear-canvas-btn" id="js-clear">Clear Canvas</button>
+
     </section>
     <aside>
       <section>
-        <h4>CREATE</h4>
-        <button id="js-create-line">Line</button>
-        <button id="js-create-circle">Circle</button>
+        <h4>Select Type to Create</h4>
+        <button class="shape-create-btn" id="js-create-line">Line</button>
+        <button class="shape-create-btn" id="js-create-arc">Circle</button>
+        <button class="shape-create-btn" id="js-create-arced-line">Arced Line</button>
       </section>
-      <button id="js-clear">Clear Canvas</button>
-      <p id="js-output"></p>
+      <section id="js-output"></section>
     </aside>
   </main>
   <footer>
