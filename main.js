@@ -197,6 +197,9 @@ ctx.canvas.addEventListener('click', () => {
 
 });
 
+window.addEventListener('keydown', (e) => {
+  console.log('Debugging:', Shape.all)
+})
 clearCanvasBtn.addEventListener('click', clear);
 // ====== START ==============================================
 loop();
