@@ -10,7 +10,7 @@ export default class Line extends Shape {
   }
 
   static createPermanentLine(temp) {
-    const line = new Line(temp.sx, temp.sy, temp.ex, temp.ey);
+    const line = temp;
     Shape.save(line);
     return line;
   }
