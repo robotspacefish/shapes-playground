@@ -1,19 +1,19 @@
 import Line from './Line.js';
 import Point from './Point.js';
 import Arc from './Arc.js';
+import Shape from './Shape.js';
+import ArcedLine from './ArcedLine.js';
 
 // ====== GLOBALS ==================================
 const ctx = document.getElementById('js-canvas').getContext('2d'),
   canvasContainer = document.getElementById('js-canvas-container'),
   clearCanvasBtn = document.getElementById('js-clear'),
-  createLineBtn = document.getElementById('js-create-line'),
-  createArcBtn = document.getElementById('js-create-arc'),
   createButtons = document.querySelectorAll('.shape-create-btn'),
   output = document.getElementById('js-output'),
   WIDTH = ctx.canvas.width, HEIGHT = ctx.canvas.height,
   mouse = { x: null, y: null, textX: null, texY: null };
 
-let startPoint, endPoint, tempShape, shape;
+let startPoint, endPoint, tempShape, shape, arcPoint;
 
 // ====== MAIN ======================================
 function draw() {
@@ -41,6 +41,16 @@ function update() {
         tempShape.ey = endPoint.y;
       }
       break;
+    case 'arced-line':
+      if (tempShape) {
+        console.log('updating')
+        tempShape.ex = endPoint.x;
+        tempShape.ey = endPoint.y;
+        arcPoint.update(tempShape.ex, tempShape.sy);
+        tempShape.ax = arcPoint.x;
+        tempShape.ay = arcPoint.y;
+
+      }
   }
 
 
@@ -96,7 +106,8 @@ function resize() {
 function createClickHandler(e) {
   if (e.target.id === 'js-create-line') shape = 'line';
   else if (e.target.id === 'js-create-arc') shape = 'arc';
-
+  else if (e.target.id === 'js-create-arced-line') shape = 'arced-line';
+  console.log(shape)
   createButtons.forEach(btn => {
     if (btn.classList.contains('selected')) btn.classList.remove('selected');
   });
@@ -112,6 +123,12 @@ function isExistingPointClicked() {
   return point ? point : false;
 }
 
+function reset() {
+  startPoint = null;
+  endPoint = null;
+  tempShape = null;
+}
+
 // ====== EVENT LISTENERS ===================================
 window.addEventListener('load', () => {
   resize();
@@ -122,6 +139,7 @@ window.addEventListener('resize', () => {
 })
 
 createButtons.forEach(btn => {
+  //  TODO clear any in progress shape
   btn.addEventListener('click', createClickHandler)
 })
 
@@ -136,7 +154,7 @@ ctx.canvas.addEventListener('mousemove', (e) => {
   mouse.textY = mouse.y - 10;
 
   // move text if too close to edges
-  mouse.textX += mouse.x > ctx.canvas.width - 45 ? -70 : 10;
+  mouse.textX += mouse.x > ctx.canvas.width - 100 ? -70 : 10;
 
   if (mouse.y > ctx.canvas.height - 30) {
     mouse.textY = mouse.y - 20;
@@ -150,21 +168,32 @@ ctx.canvas.addEventListener('mousemove', (e) => {
 ctx.canvas.addEventListener('click', () => {
   if (shape) {
     const existingPoint = isExistingPointClicked();
+
     if (existingPoint) {
-      console.log('found a point')
-    } else {
-      Point.count++;
       if (!startPoint) {
-        // startPoint = new Point(mouse.x, mouse.y);
+        startPoint = existingPoint;
+        endPoint = new Point(mouse.x, mouse.y);
+
+        if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
+        else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
+      } else {
+        //endpoint
+        // TODO
+      }
+
+    } else {
+      if (!startPoint) {
         startPoint = Point.createPermanentPoint(mouse.x, mouse.y);
         endPoint = new Point(mouse.x, mouse.y);
 
         if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
         else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
+        else if (shape === 'arced-line') {
+          arcPoint = Point.createPermanentPoint(startPoint.x, endPoint.y, 'red');
+          tempShape = new ArcedLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, arcPoint.x, arcPoint.y, 'lightgrey')
+        }
 
-      }
-
-      if (Point.count === 2) {
+      } else if (endPoint) {
         switch (shape) {
           case 'arc':
             const arc = Arc.createPermanentArc(tempShape);
@@ -176,13 +205,14 @@ ctx.canvas.addEventListener('click', () => {
             tempShape.addPoints(startPoint, endPoint);
             line.renderDescription(output);
             break;
+          case 'arced-line':
+            const arcedLine = ArcedLine.createPermanentArcedLine(tempShape);
+            Point.createPermanentPoint(endPoint.x, endPoint.y);
+            tempShape.addPoints(startPoint, endPoint);
+
         }
 
-        // reset point count & start/end points
-        Point.count = 0;
-        startPoint = null;
-        endPoint = null;
-        tempShape = null;
+        reset();
       }
 
 
@@ -192,6 +222,10 @@ ctx.canvas.addEventListener('click', () => {
 
 });
 
+window.addEventListener('keydown', (e) => {
+  console.log('Debugging:', Shape.all)
+  console.log('tempShape', tempShape)
+})
 clearCanvasBtn.addEventListener('click', clear);
 // ====== START ==============================================
 loop();

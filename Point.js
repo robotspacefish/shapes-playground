@@ -2,14 +2,12 @@ import Arc from './Arc.js';
 import Shape from './Shape.js';
 
 export default class Point extends Arc {
-  static count = 0;
-
-  constructor(x, y, radius = 4, color = 'blue') {
+  constructor(x, y, color = 'blue', radius = 4,) {
     super(x, y, radius, color)
   }
 
-  static createPermanentPoint(x, y) {
-    const point = new Point(x, y);
+  static createPermanentPoint(x, y, color) {
+    const point = new Point(x, y, color);
     Shape.save(point);
     return point;
   }
