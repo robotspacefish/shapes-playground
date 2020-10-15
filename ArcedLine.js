@@ -19,14 +19,9 @@ export default class ArcedLine extends Shape {
     this.radius = distance(midX, midY, this.ax, this.ay);
   }
 
-  static createPermanentLine(temp) {
-    const line = temp;
-    Shape.save(line);
-    return line;
-  }
-
   static createPermanentArcedLine(temp) {
     const arcedLine = temp;
+    Shape.save(temp);
     return arcedLine;
   }
 
