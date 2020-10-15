@@ -1,4 +1,5 @@
 import Shape from './Shape.js';
+import { midPoint, distance } from './helpers.js';
 
 export default class ArcedLine extends Shape {
   constructor(sx, sy, ex, ey, ax, ay, color = 'black') {
@@ -10,6 +11,12 @@ export default class ArcedLine extends Shape {
     this.ax = ax; // arc poiints
     this.ay = ay;
     this.radius = 50;
+  }
+
+  updateRadius() {
+    const midX = midPoint(this.sx, this.ex);
+    const midY = midPoint(this.sy, this.ey);
+    this.radius = distance(midX, midY, this.ax, this.ay);
   }
 
   static createPermanentLine(temp) {
