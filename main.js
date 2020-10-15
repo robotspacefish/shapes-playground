@@ -130,6 +130,44 @@ function reset() {
   tempShape = null;
 }
 
+function confirmShape() {
+  switch (shape) {
+    case 'arc':
+      const arc = Arc.createPermanentArc(tempShape);
+      arc.renderDescription(output);
+      break;
+    case 'line':
+      const line = Line.createPermanentLine(tempShape);
+      Point.createPermanentPoint(endPoint.x, endPoint.y); // finalize endpoint
+      tempShape.addPoints(startPoint, endPoint);
+      line.renderDescription(output);
+      break;
+    case 'arced-line':
+      const arcedLine = ArcedLine.createPermanentArcedLine(tempShape);
+      endPoint.y = arcedLine.ay + arcedLine.radius * (endPoint.y < arcedLine.sy ?
+        -1 : 1);
+      endPoint.x = arcedLine.ax;
+      Point.createPermanentPoint(endPoint.x, endPoint.y);
+      tempShape.addPoints(startPoint, endPoint);
+
+  }
+
+  reset();
+}
+
+function createTempShape(existingPoint) {
+  endPoint = new Point(mouse.x, mouse.y);
+  startPoint = existingPoint ? existingPoint : Point.createPermanentPoint(mouse.x, mouse.y);
+
+  if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
+  else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
+  else if (shape === 'arced-line') {
+    arcPoint = Point.createPermanentPoint(startPoint.x, endPoint.y, 'red');
+    tempShape = new ArcedLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, arcPoint.x, arcPoint.y, 'lightgrey')
+  }
+
+}
+
 // ====== EVENT LISTENERS ===================================
 window.addEventListener('load', () => {
   resize();
@@ -171,63 +209,13 @@ ctx.canvas.addEventListener('click', () => {
     const existingPoint = isExistingPointClicked();
 
     if (existingPoint) {
-      if (!startPoint) {
-        startPoint = existingPoint;
-        endPoint = new Point(mouse.x, mouse.y);
-
-        if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
-        else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
-        else if (shape === 'arced-line') {
-          arcPoint = Point.createPermanentPoint(startPoint.x, endPoint.y, 'red');
-          tempShape = new ArcedLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, arcPoint.x, arcPoint.y, 'lightgrey')
-        }
-      } else {
-        //endpoint
-        // TODO
+      if (!startPoint) createTempShape(existingPoint);
+      else {
+        endPoint = existingPoint;
+        confirmShape();
       }
-
-    } else {
-      if (!startPoint) {
-        startPoint = Point.createPermanentPoint(mouse.x, mouse.y);
-        endPoint = new Point(mouse.x, mouse.y);
-
-        if (shape === 'arc') tempShape = new Arc(startPoint.x, startPoint.y, Math.abs(Math.floor(endPoint.x - startPoint.x)), 'lightgrey');
-        else if (shape === 'line') tempShape = new Line(startPoint.x, startPoint.y, endPoint.x, endPoint.y, 'lightgrey');
-        else if (shape === 'arced-line') {
-          arcPoint = Point.createPermanentPoint(startPoint.x, endPoint.y, 'red');
-          tempShape = new ArcedLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, arcPoint.x, arcPoint.y, 'lightgrey')
-        }
-
-      } else if (endPoint) {
-        switch (shape) {
-          case 'arc':
-            const arc = Arc.createPermanentArc(tempShape);
-            arc.renderDescription(output);
-            break;
-          case 'line':
-            const line = Line.createPermanentLine(tempShape);
-            Point.createPermanentPoint(endPoint.x, endPoint.y); // finalize endpoint
-            tempShape.addPoints(startPoint, endPoint);
-            line.renderDescription(output);
-            break;
-          case 'arced-line':
-            const arcedLine = ArcedLine.createPermanentArcedLine(tempShape);
-            endPoint.y = arcedLine.ay + arcedLine.radius * (endPoint.y < arcedLine.sy ?
-              -1 : 1);
-            endPoint.x = arcedLine.ax;
-            Point.createPermanentPoint(endPoint.x, endPoint.y);
-            tempShape.addPoints(startPoint, endPoint);
-
-        }
-
-        reset();
-      }
-
-
-    }
-
+    } else !startPoint ? createTempShape() : confirmShape();
   }
-
 });
 
 window.addEventListener('keydown', (e) => {
