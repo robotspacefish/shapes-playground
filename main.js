@@ -49,6 +49,7 @@ function update() {
         arcPoint.update(tempShape.ex, tempShape.sy);
         tempShape.ax = arcPoint.x;
         tempShape.ay = arcPoint.y;
+        tempShape.updateRadius();
 
       }
   }
