@@ -208,6 +208,9 @@ ctx.canvas.addEventListener('click', () => {
             break;
           case 'arced-line':
             const arcedLine = ArcedLine.createPermanentArcedLine(tempShape);
+            endPoint.y = arcedLine.ay + arcedLine.radius * (endPoint.y < arcedLine.sy ?
+              -1 : 1);
+            endPoint.x = arcedLine.ax;
             Point.createPermanentPoint(endPoint.x, endPoint.y);
             tempShape.addPoints(startPoint, endPoint);
 
